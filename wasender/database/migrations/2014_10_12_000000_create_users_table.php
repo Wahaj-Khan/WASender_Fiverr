@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('avatar')->nullable();
             $table->string('authkey')->nullable();
+            $table->string('otp')->nullable();
             $table->string('wallet')->nullable();
             $table->string('role')->default('user');
             $table->string('email')->unique();
