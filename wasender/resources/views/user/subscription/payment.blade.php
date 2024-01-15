@@ -94,7 +94,7 @@
                <td>
                   {{ __('Payble Amount: ') }}
                </td>
-               <td class="textcenter">
+               <td class="textcenter total-amount">
                   {{ $total*$gateway->multiply+$gateway->charge }}
                </td>
             </tr>
@@ -128,6 +128,15 @@
          </div>
          @endif
       </div>
+      <div class="row align-items-center justify-content-between" >
+      <div class="form-group col-8">
+            <label><b>{{ __('Coupon Code') }}</b></label>
+            <input type="text" name="coupon_code" class="form-control" required="" >
+      </div>
+      <button class="btn btn-neutral  col-4 submit-button mb-2 mt-2 apply-button" >{{ __('Apply') }}</button>
+
+</div>
+
       <button class="btn btn-neutral  col-12 submit-button mb-2 mt-2">{{ __('Pay Now') }}</button>
    </form>
 </div>
@@ -178,7 +187,7 @@
       </tr>
       <tr class="title">
          <td class="textright">Total:</td>
-         <td class="textcenter">{{ amount_format($total,'name') }}</td>
+         <td class="textcenter total-amount">{{ amount_format($total,'name') }}</td>
       </tr>
    </table>
 
@@ -186,5 +195,47 @@
 </div>
 @endsection
 @push('js')
+<!-- Include jQuery library (if not already included) -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<!-- Your existing HTML code -->
+
+<script>
+$(document).ready(function() {
+    $('.apply-button').click(function(e) {
+        e.preventDefault();
+
+        // Get coupon code from the input field
+        var couponCode = $('input[name="coupon_code"]').val();
+
+        // AJAX request to validate and apply the coupon
+        $.ajax({
+            type: 'POST',
+            url: '{{ url('user/subscription-coupon') }}', // Replace with your actual URL for coupon validation
+            data: {
+                '_token': '{{ csrf_token() }}',
+                'coupon_code': couponCode,
+                'total_amount': '{{ $total*$gateway->multiply+$gateway->charge }}',
+            },
+            success: function(response) {
+                // Handle the response from the server
+                if (response.success) {
+                    // Update the total amount with the discounted value
+                    var discountedAmount = response.discounted_amount;
+                    $('.total-amount').text(discountedAmount);
+                } else {
+                    // Handle invalid coupon code
+                    alert('Invalid coupon code. Please try again.');
+                }
+            },
+            error: function(error) {
+                // Handle AJAX error
+                console.log(error);
+            }
+        });
+    });
+});
+</script>
+
 <script src="{{ asset('assets/js/pages/user/subscription-pay.js') }}"></script>
 @endpush

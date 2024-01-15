@@ -123,6 +123,12 @@
     </a>
   </li>
   <li class="nav-item">
+    <a class="nav-link {{ Request::is('admin/faq*') ? 'active' : '' }}" href="{{ route('admin.coupouns.index') }}">
+      <i class="fi  fi-rs-comments-question-check"></i>
+      <span class="nav-link-text">{{ __('Coupons') }}</span>
+    </a>
+  </li>
+  <li class="nav-item">
     <a class="nav-link {{ Request::is('admin/features*') ? 'active' : '' }}" href="{{ route('admin.features.index') }}">
       <i class="fi fi-rs-dice-alt"></i>
       <span class="nav-link-text">{{ __('Features') }}</span>

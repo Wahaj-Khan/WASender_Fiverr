@@ -69,8 +69,12 @@ Route::group(['prefix' => 'user', 'as' => 'user.', 'middleware' => ['auth','user
    //help and support routes
    Route::resource('support',                            USER\SupportController::class);
    //subscription / plan route
-   Route::resource('subscription',                       USER\SubscriptionController::class);
+   Route::resource('subscription', USER\SubscriptionController::class);
+
+   // Route::resource('validateCoupon',                       USER\SubscriptionController::class);
    Route::post('make-subscribe/{gateway_id}/{plan_id}',  [USER\SubscriptionController::class,'subscribe'])->name('make-payment');
+   Route::post('subscription-coupon',  [USER\SubscriptionController::class,'validateCoupon'])->name('subscription-coupon');
+
    Route::get('/subscription/plan/{status}',             [USER\SubscriptionController::class,'status']);
    Route::get('/subscriptions/log',                      [USER\SubscriptionController::class,'log']);
    Route::get('/subscription-history',                   [USER\SubscriptionController::class,'log']);

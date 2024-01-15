@@ -29,6 +29,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth','ad
 	Route::resource('features',     			ADMIN\FeaturesController::class);
 	Route::resource('testimonials',     		ADMIN\TestimonialsController::class);
 	Route::resource('faq',     		            ADMIN\FaqController::class);
+	Route::resource('coupouns',     		            ADMIN\CoupounsController::class);
+
 	Route::resource('team',     		        ADMIN\TeamController::class);
 	Route::resource('about',     		        ADMIN\AboutController::class);
 	Route::resource('message-transactions',     ADMIN\TransactionController::class);

@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Plan;
 use App\Models\Gateway;
 use App\Models\Order;
+use App\Models\Coupons;
+
 use App\Traits\Notifications;
 use Session;
 use Auth;
@@ -71,6 +73,31 @@ class SubscriptionController extends Controller
         return view('user.subscription.log',compact('orders'));
     }
 
+
+    public function validateCoupon(Request $request)
+    {
+        $coupon = Coupons::where('coupon_code', $request->coupon_code)->first();
+
+        if ($coupon) {
+            // Calculate the discounted amount (you need to implement this logic)
+            $discountedAmount = $this->calculateDiscount($request->total_amount, $coupon->discount);
+
+            // Return the discounted amount in the response
+            return response()->json(['success' => true, 'discounted_amount' => $discountedAmount]);
+        }
+
+        // Invalid coupon
+        return response()->json(['success' => false]);
+    }
+
+    // Add this method to your controller to calculate the discounted amount
+    private function calculateDiscount($totalAmount, $discountPercentage)
+    {
+        // Implement your discount calculation logic here
+        // For example, subtract the discount percentage from the total amount
+        return $totalAmount - ($totalAmount * $discountPercentage / 100);
+    }
+
     /**
      * store the specified resource in storage.
      *
@@ -82,12 +109,17 @@ class SubscriptionController extends Controller
     {
 
       $plan     = Plan::where('status',1)->where('price','>',0)->findorFail($planid);
+      $coupon_code = $request->coupon_code;
+      $coupon = Coupons::where('coupon_code', $request->coupon_code)->first();
 
       $gateway  = Gateway::where('status',1)->findorFail($gatewayid);
       $tax      = get_option('tax');
       $tax      = $tax > 0 ? ($plan->price / 100) * $tax : 0;
       $total    = (double)$tax+$plan->price;
-      $payable  = $total*$gateway->multiply+$gateway->charge;
+
+      $total_discoounted = $total - ($total * $coupon->discount / 100);
+
+      $payable  = $total_discoounted*$gateway->multiply+$gateway->charge;
 
         if ($gateway->min_amount > $payable ){
             return redirect()->back()->with('min-max', __('The minimum transaction amount is :amount '.$gateway->min_amount));
