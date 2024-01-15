@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::group(['prefix' => 'cron', 'as' => 'cron.'], function (){
+Route::group(['prefix' => 'cron', 'as' => 'cron.'], function () {
 
     Route::get('/execute-schedule', [App\Http\Controllers\CronController::class, 'ExecuteSchedule']);
 
@@ -25,14 +25,13 @@ Route::group(['prefix' => 'cron', 'as' => 'cron.'], function (){
 
     Route::get('/notify-to-user', [App\Http\Controllers\CronController::class, 'notifyToUser']);
     Route::get('/remove-junk-device', [App\Http\Controllers\CronController::class, 'removeJunkDevice']);
-
 });
 
-Route::get('/local/{lang}',function($lang){
-     \Session::put('locale', $lang);
-     \App::setlocale($lang);
-     
-     return back();
+Route::get('/local/{lang}', function ($lang) {
+    \Session::put('locale', $lang);
+    \App::setlocale($lang);
+
+    return back();
 });
 
 //**======================== Payment Gateway Route Group for merchant ====================**//

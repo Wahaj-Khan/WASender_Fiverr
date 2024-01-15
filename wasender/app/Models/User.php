@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Support\Facades\DB;
+
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
@@ -24,6 +25,8 @@ class User extends Authenticatable
         'password',
         'authkey',
         'wallet',
+        'otp',
+        'email_verified_at',
     ];
 
     /**
@@ -36,9 +39,9 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    protected $cast=[
-        'meta'=>'json',
-        'plan'=>'json'
+    protected $cast = [
+        'meta' => 'json',
+        'plan' => 'json'
     ];
 
     /**
@@ -50,7 +53,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-     public static function getpermissionGroups()
+    public static function getpermissionGroups()
     {
         $permission_groups = DB::table('permissions')
             ->select('group_name as name')
@@ -72,7 +75,7 @@ class User extends Authenticatable
         return $permissions;
     }
 
-     public static function roleHasPermissions($role, $permissions)
+    public static function roleHasPermissions($role, $permissions)
     {
         $hasPermission = true;
         foreach ($permissions as $permission) {
@@ -84,19 +87,32 @@ class User extends Authenticatable
         return $hasPermission;
     }
 
+
+
+    // public static function getUserOTP($email)
+    // {
+    //     $user = User::where('email', $email)->first();
+
+    //     if ($user) {
+    //         return $user->otp;
+    //     }
+
+    //     return null;
+    // }
+
     public function app()
     {
-        return $this->hasOne('App\Models\App','user_id','id');
+        return $this->hasOne('App\Models\App', 'user_id', 'id');
     }
 
     public function plan()
     {
-        return $this->belongsTo('App\Models\Plan','plan_id');
+        return $this->belongsTo('App\Models\Plan', 'plan_id');
     }
 
     public function subscription()
     {
-        return $this->belongsTo('App\Models\Plan','plan_id');
+        return $this->belongsTo('App\Models\Plan', 'plan_id');
     }
 
     public function orders()
@@ -114,7 +130,7 @@ class User extends Authenticatable
         return $this->hasMany('App\Models\Device');
     }
 
-     public function contact()
+    public function contact()
     {
         return $this->hasMany('App\Models\Contact');
     }
